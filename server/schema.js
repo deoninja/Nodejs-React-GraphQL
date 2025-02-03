@@ -69,6 +69,15 @@ const RootQueryType = new GraphQLObjectType({
         return employees;
       },
     },
+    employee:{
+        type: EmployeeType,
+        args:{id: {type: GraphQLString}},
+        resolve: (parent, args) => {            
+           return employees.find(employee => employee.id === args.id);               
+        
+        }                       
+        
+        }
   },
 });
 
