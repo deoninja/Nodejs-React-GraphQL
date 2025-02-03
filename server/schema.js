@@ -13,17 +13,23 @@ const {
 
 const EmployeeType = new GraphQLObjectType({
   name: 'Employee',
-  fields: {
-    id: { type: GraphQLString }, 
+  fields: () => ({
+    id: { type: GraphQLString },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
-  },
+    todos: {
+      type: GraphQLList(TodoType),
+      resolve: (employee) => {
+        return todos.filter((todo) => todo.employeeId === employee.id);
+      },
+    },
+  }),
 });
 
 const TodoType = new GraphQLObjectType({
   name: 'Todo',
 
-  fields: {
+  fields: ()=> ({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     dueDate: { type: GraphQLString },
@@ -35,7 +41,7 @@ const TodoType = new GraphQLObjectType({
         return employees.find((employee) => employee.id === todo.employeeId);
       },
     },
-  },
+  }),
 });
 
 const RootQueryType = new GraphQLObjectType({
@@ -55,6 +61,12 @@ const RootQueryType = new GraphQLObjectType({
       resolve: (parent, args) => {
         return todos.find((todo) => todo.id === args.id);
         // return Todo.findById(args.id);
+      },
+    },
+    employees: {
+      type: new GraphQLList(EmployeeType),
+      resolve: (parent, args) => {
+        return employees;
       },
     },
   },
